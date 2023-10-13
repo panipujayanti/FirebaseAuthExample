@@ -51,41 +51,105 @@ class MainActivity : AppCompatActivity() {
 
     private fun setClickListeners() {
         //todo : set click listener
+        binding.btnChangeProfile.setOnClickListener {
+            if (checkNameValidation()) {
+                changeProfileData()
+            }
+        }
+        binding.tvChangePwd.setOnClickListener{
+            requestChangePassword()
+        }
+        binding.tvLogout.setOnClickListener{
+            doLogout()
+        }
     }
 
     private fun requestChangePassword() {
-        //todo : request change password to viewmodel and show dialog
+       viewModel.createChangePwdRequest()
+        AlertDialog.Builder(this)
+            .setMessage(
+                "Change password request sent to your email" +
+                        " ${viewModel.getCurrentUser()?.email}"
+            )
+            .setPositiveButton("Okay") { _, _ ->
+            //do nothing
+            }.create().show()
     }
 
     private fun doLogout() {
-        //todo :  show dialog, if yes proceed logout
+        AlertDialog.Builder(this)
+            .setMessage(
+                "Do you want to logout ?" +
+                        " ${viewModel.getCurrentUser()?.email}"
+            )
+            .setPositiveButton("Yes") { _, _ ->
+                viewModel.doLogout()
+                navigateToLogin()
+            }.setNegativeButton("No") {_, _ ->
+                //do nothing
+            }.create().show()
 
     }
 
     private fun navigateToLogin() {
-        //todo :  navigate to login
+        val intent = Intent(this, LoginActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        startActivity(intent)
     }
 
     private fun changeProfileData() {
         //todo :  change fullname data
+        val fullName = binding.layoutForm.etName.text.toString().trim()
+        viewModel.updateFullName(fullName)
     }
 
     private fun checkNameValidation(): Boolean {
-        //todo :  check if name is valid
-        return false
+        val fullName = binding.layoutForm.etName.text.toString().trim()
+        return if (fullName.isEmpty()) {
+            binding.layoutForm.tilName.isErrorEnabled = true
+            binding.layoutForm.tilName.error = getString(R.string.text_error_name_cannot_empty)
+            false
+        }else {
+            binding.layoutForm.tilName.isErrorEnabled = false
+            true
+        }
     }
 
     private fun observeData() {
-        //todo : observe result change photo and detail
+        viewModel.changeProfileResult.observe(this) {
+            it.proceedWhen(
+                doOnSuccess = {
+                    binding.pbLoading.isVisible = false
+                    binding.btnChangeProfile.isVisible = true
+                    Toast.makeText(this, "Change Profile data Success !", Toast.LENGTH_SHORT).show()
+                },
+                doOnError = {
+                    binding.pbLoading.isVisible = false
+                    binding.btnChangeProfile.isVisible = true
+                    Toast.makeText(this, "Change Profile data Failed !", Toast.LENGTH_SHORT).show()
+
+                },
+                doOnLoading = {
+                    binding.pbLoading.isVisible = true
+                    binding.btnChangeProfile.isVisible = false
+                }
+            )
+        }
     }
 
     private fun setupForm() {
         //todo : setup form that required in this page
+        binding.layoutForm.tilName.isVisible = true
+        binding.layoutForm.tilEmail.isVisible = true
+        binding.layoutForm.etEmail.isEnabled = false
     }
 
     private fun showUserData() {
-        //todo : show user data to the views
-
+        viewModel.getCurrentUser()?.let {
+            binding.layoutForm.etName.setText(it.fullName)
+            binding.layoutForm.etEmail.setText(it.email)
+        }
     }
 
     private fun createViewModel(): MainViewModel {

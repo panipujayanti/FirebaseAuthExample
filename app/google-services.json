@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "95848606475",
+    "project_id": "fir-authexample-c78cc",
+    "storage_bucket": "fir-authexample-c78cc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:95848606475:android:cd3bbe4bd10ebf0fc4900e",
+        "android_client_info": {
+          "package_name": "com.catnip.firebaseauthexample"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKJmiAgarAMzCvo8rH0-pW2FhIgXGYhMU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

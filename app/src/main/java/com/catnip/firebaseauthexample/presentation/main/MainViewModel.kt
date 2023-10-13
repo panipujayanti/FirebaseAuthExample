@@ -16,4 +16,24 @@ Github : https://github.com/hermasyp
  **/
 class MainViewModel(private val repo: UserRepository) : ViewModel() {
 
+    private val _changeProfileResult = MutableLiveData<ResultWrapper<Boolean>>()
+    val changeProfileResult: LiveData<ResultWrapper<Boolean>>
+        get() = _changeProfileResult
+
+    fun getCurrentUser() = repo.getCurrentUser()
+
+    fun updateFullName(fullName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.updateProfile(fullName = fullName).collect {
+                _changeProfileResult.postValue(it)
+            }
+        }
+    }
+    fun createChangePwdRequest() {
+        repo.sendChangePasswordRequestByEmail()
+    }
+    fun doLogout(){
+        repo.doLogout()
+    }
+
 }
